@@ -1,3 +1,3 @@
-# AndroidAppTemplate
+# Simplified Canvas
 
-A template for creating an Android application project.
+Create a simplified version of [SCRL](https://scrl.com/)

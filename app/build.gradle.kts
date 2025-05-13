@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.application.androidapptemplate"
+    namespace = "com.simplified.canvas"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.application.androidapptemplate"
+        applicationId = "com.simplified.canvas"
         minSdk = 30
         targetSdk = 35
         versionCode = 1

@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AndroidAppTemplate"
+rootProject.name = "Simplified Canvas"
 include(":app")
