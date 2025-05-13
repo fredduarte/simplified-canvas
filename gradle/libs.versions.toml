@@ -13,6 +13,7 @@ lifecycle = "2.9.0"
 activityCompose = "1.10.1"
 composeBom = "2024.09.00"
 hilt = "2.56.1"
+hilt-navigation-compose = "1.2.0"
 composeDestinations = "2.1.0"
 material = "1.7.8"
 
@@ -32,6 +33,7 @@ androidx-material = { group = "androidx.compose.material", name = "material", ve
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
 
 compose-destinations-core = { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "composeDestinations" }
 compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "composeDestinations" }
