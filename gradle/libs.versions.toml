@@ -1,4 +1,10 @@
 [versions]
+applicationId = "com.simplified.canvas"
+minSdk = "30"
+compileSdk = "35"
+appVersionCode = "1"
+appVersionName = "1.0"
+
 agp = "8.10.0"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"

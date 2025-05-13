@@ -5,15 +5,15 @@ plugins {
 }
 
 android {
-    namespace = "com.simplified.canvas"
-    compileSdk = 35
+    namespace = libs.versions.applicationId.get()
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.simplified.canvas"
-        minSdk = 30
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        applicationId = libs.versions.applicationId.get()
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.compileSdk.get().toInt()
+        versionCode = libs.versions.appVersionCode.get().toInt()
+        versionName = libs.versions.appVersionName.get()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
