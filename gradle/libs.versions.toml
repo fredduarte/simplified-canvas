@@ -13,6 +13,7 @@ lifecycle = "2.9.0"
 activityCompose = "1.10.1"
 composeBom = "2024.09.00"
 hilt = "2.56.1"
+composeDestinations = "2.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -29,6 +30,10 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+
+compose-destinations-core = { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "composeDestinations" }
+compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "composeDestinations" }
+compose-destinations-bottom-sheet = { group = "io.github.raamcosta.compose-destinations", name = "bottom-sheet", version.ref = "composeDestinations" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

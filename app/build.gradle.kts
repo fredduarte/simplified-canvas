@@ -57,6 +57,10 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
+    implementation(libs.compose.destinations.core)
+    ksp(libs.compose.destinations.ksp)
+    implementation(libs.compose.destinations.bottom.sheet)
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
