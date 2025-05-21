@@ -1,5 +1,6 @@
 package com.simplified.canvas.ui.viewmodel
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
@@ -15,12 +16,14 @@ import kotlin.uuid.Uuid
 class CanvasViewModel @Inject constructor(
 ): ViewModel() {
 
+    var currentTopZIndex: Int = 0
+
     private val _viewState = MutableStateFlow(
         ViewState(
             strokeColor = Color.Black,
             minCanvasHeight = 0,
-            currentTopZIndex = 0,
             rectangles = emptyList(),
+            selectedId = null,
         )
     )
     val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
@@ -29,9 +32,75 @@ class CanvasViewModel @Inject constructor(
         _viewState.value = ViewState(
             strokeColor = Color.Black,
             minCanvasHeight = 400,
-            currentTopZIndex = 2,
             rectangles = createRectangles(5, 200f, 200f),
+            selectedId = null,
         )
+    }
+
+    fun onAction(action: CanvasAction) {
+        when (action) {
+            is CanvasAction.Tap -> handleTap(canvasTapOffset = action.offset)
+            is CanvasAction.MultiTouchRectangle -> handleMultiTouchRectangle(action)
+        }
+    }
+
+    private fun handleTap(canvasTapOffset: Offset) {
+        val found = _viewState.value.rectangles
+            .sortedByDescending { it.zIndex }
+            .find { rect ->
+                val local = mapPointToRectLocalSpace(canvasTapOffset, rect)
+                rect.rect.contains(local)
+            }
+
+        _viewState.value = _viewState.value.copy(selectedId = found?.id)
+    }
+
+    private fun mapPointToRectLocalSpace(point: Offset, rect: Rectangle): Offset {
+        // Inverse translation
+        var local = point - rect.translation
+        // Inverse rotation (around rect center)
+        local = rotatePoint(local, -rect.rotation, rect.rect.center)
+        // Inverse scale (around rect center)
+        local = scalePoint(local, if (rect.scale != 0f) 1f / rect.scale else 1f, rect.rect.center)
+        return local
+    }
+
+    private fun rotatePoint(point: Offset, degrees: Float, pivot: Offset): Offset {
+        val rad = Math.toRadians(degrees.toDouble())
+        val cos = kotlin.math.cos(rad)
+        val sin = kotlin.math.sin(rad)
+        val dx = point.x - pivot.x
+        val dy = point.y - pivot.y
+        val x = dx * cos - dy * sin + pivot.x
+        val y = dx * sin + dy * cos + pivot.y
+        return Offset(x.toFloat(), y.toFloat())
+    }
+
+    private fun scalePoint(point: Offset, scale: Float, pivot: Offset): Offset {
+        val dx = point.x - pivot.x
+        val dy = point.y - pivot.y
+        return Offset(pivot.x + dx * scale, pivot.y + dy * scale)
+    }
+
+    private fun handleMultiTouchRectangle(action: CanvasAction.MultiTouchRectangle) {
+        val selectedId = _viewState.value.selectedId ?: return
+
+        val updatedRectangles = _viewState.value.rectangles.map { rect ->
+            if (rect.id == selectedId) {
+                val minZoom = 0.2f
+                val maxZoom = 5f
+
+                rect.copy(
+                    translation = rect.translation + action.pan,
+                    scale = (rect.scale * action.zoom).coerceIn(minZoom, maxZoom),
+                    rotation = rect.rotation + action.rotation,
+                )
+            } else {
+                rect
+            }
+        }
+
+        _viewState.value = _viewState.value.copy(rectangles = updatedRectangles)
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -49,7 +118,10 @@ class CanvasViewModel @Inject constructor(
                 topLeftX + width,
                 topLeftY + height,
             ),
-            zIndex = _viewState.value.currentTopZIndex + 1,
+            zIndex = ++currentTopZIndex,
+            translation = Offset.Zero,
+            scale = 1f,
+            rotation = 0f,
         )
     }
 
@@ -72,8 +144,8 @@ class CanvasViewModel @Inject constructor(
                 )
             )
 
-            currentX += rectangleWidth
-            currentY += rectangleHeight
+            currentX += rectangleWidth / 1.5f
+            currentY += rectangleHeight / 1.5f
         }
 
         return rectangles
@@ -83,12 +155,24 @@ class CanvasViewModel @Inject constructor(
 data class ViewState(
     val strokeColor: Color,
     val minCanvasHeight: Int,
-    val currentTopZIndex: Int, // Remove this if not needed
     val rectangles: List<Rectangle>,
+    val selectedId: String?,
 )
+
+sealed interface CanvasAction {
+    data class Tap(val offset: Offset) : CanvasAction
+    data class MultiTouchRectangle(
+        val pan: Offset,
+        val zoom: Float,
+        val rotation: Float
+    ) : CanvasAction
+}
 
 data class Rectangle(
     val id: String,
     val rect: Rect,
     val zIndex: Int,
+    val translation: Offset,
+    val scale: Float,
+    val rotation: Float,
 )
